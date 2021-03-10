@@ -17,7 +17,7 @@ export default function Home({ posts }) {
   return (
     <>
       <PageSeo
-        title={siteMetadata.title}
+        title="Profile"
         description={siteMetadata.description}
         url={siteMetadata.siteUrl}
       />
