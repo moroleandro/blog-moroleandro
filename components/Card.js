@@ -12,7 +12,7 @@ const Card = ({ id, title, description, language, href }) => (
           </Link>
         </h2>
         <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">{description}</p>
-        <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">Language: {language}</p>
+        <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">{"Language:"} {language}</p>
         {href && (
           <Link
             id={id}
