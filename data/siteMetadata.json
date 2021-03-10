@@ -1,0 +1,19 @@
+{
+  "title": "@moroleandro",
+  "author": "Leandro Moro",
+  "headerTitle": "Leandro Moro",
+  "headerDescription": "Site Reliability Engineer",
+  "description": "",
+  "language": "en-us",
+  "siteUrl": "https://moroleandro.com",
+  "siteRepo": "https://github.com/moroleandro/blog-moroleandro",
+  "image": "https://avatars.githubusercontent.com/u/33632804?s=460",
+  "email": "contact@moroleandro.com",
+  "github": "https://github.com/moroleandro",
+  "gitlab": "https://gitlab.com/moroleandro",
+  "twitter": "https://twitter.com/moroleandro_",
+  "linkedin": "https://www.linkedin.com/in/moroleandro",
+  "medium": "https://medium.com/@moroleandro",
+  "locale": "en-US",
+  "bio": "Passionate about technology, acting as infrastructure engineer. Open to learn new technologies and methodologies to improve every day more as a professional."
+}
