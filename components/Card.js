@@ -2,17 +2,21 @@ import Image from 'next/image'
 import Link from '@/components/Link'
 
 const Card = ({ id, title, description, language, href }) => (
-  <div className="p-6 md:w-1/2 md" style={{ maxWidth: '544px' }}>
+  <div className="flex flex-col p-6 md:w-1/2" style={{ maxWidth: '544px' }}>
     <div className="h-full border-2 border-gray-200 border-opacity-60 dark:border-gray-700 rounded-md overflow-hidden">
      
       <div className="p-6">
-        <h2 className="text-2xl font-bold leading-8 tracking-tight mb-3">
+        <h2 className="text-2xl font-bold leading-6 tracking-tight mb-2">
           <Link href={href} aria-label={`Link to ${title}`}>
             {title}
           </Link>
         </h2>
         <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">{description}</p>
-        <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">{"Language:"} {language}</p>
+        {language ? (
+          <p className="prose text-gray-500 max-w-none dark:text-gray-400 mb-3">Language: {language}</p>
+        ) : (
+          ""
+          )}
         {href && (
           <Link
             id={id}
