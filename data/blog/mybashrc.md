@@ -11,4 +11,6 @@ alias k=kubectl
 complete -F __start_kubectl k
 alias kg='kubectl get pod'
 alias kd='kubectl describe'
+
+teste 123
 ```
