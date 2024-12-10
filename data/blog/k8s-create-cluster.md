@@ -17,14 +17,14 @@ summary: 'Este guia apresenta o passo a passo para configurar um pequeno cluster
 
 1 - Carregar os módulos do kernel overlay e br_netfilter é essencial para o funcionamento de um cluster Kubernetes. O módulo overlay permite que o sistema operacional suporte a sobreposição de sistemas de arquivos e o br_netfilter habilita o redirecionamento e o filtro de pacotes de rede que passam pela ponte (bridge) criada pelas redes do Kubernetes.
 
-```bash:.bashrc
+```bash
 echo overlay >> /etc/modules-load.d/k8s.conf
 echo br_netfilter >> /etc/modules-load.d/k8s.conf
 ```
 
 2 - Mude alguns parâmetros dentro do SO, para habilitar o IP Forwarding, bridge ipv4 e ipv6.
 
-```bash:.bashrc
+```bash
 echo net.bridge.bridge-nf-call-iptables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.bridge.bridge-nf-call-ip6tables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
@@ -32,7 +32,7 @@ echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
 
 3 - Faça um reboot utilizando o seguinte comando, para maquina carregar os módulos alterados.
 
-```bash:.bashrc
+```bash
 sysctl --system
 ```
 
@@ -40,13 +40,13 @@ sysctl --system
 
 1 - Realize o update dos pacotes da VM.
 
-```bash:.bashrc
+```bash
 apt update -y
 ```
 
 2 - Instale o binário do containerd.
 
-```bash:.bashrc
+```bash
 apt install -y containerd
 ```
 
@@ -60,7 +60,7 @@ systemctl restart containerd.service
 
 # Instalação dos pacotes kubernetes kubeadm, kubectl e kubelet (ControlPlane)
 
-1 - 
+1 - Agora vamos instalar os seguintes componentes: kubeadm, utilitário responsável por inicializar o cluster; kubelet, componente que roda em todas as máquinas do cluster e realiza tarefas como iniciar pods e contêineres; e kubectl, ferramenta de linha de comando utilizada para interagir com o cluster.
 
 ```bash:.bashrc
 apt-get install -y apt-transport-https ca-certificates curl gpg
@@ -90,13 +90,13 @@ kubeadm join 10.128.0.2:6443 --token auizk7.zbsq77inba5eys2h \
 
 * Não se preocupe, caso você feche a sessão e perca este token basta executar o comando:
 
-```bash:.bashrc
+```bash
 kubeadm token create --print-join-command
 ```
 
 4 - Outro ponto importante é ajustar as permissões para a pasta do Kubernetes.
 
-```bash:.bashrc
+```bash
 mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
@@ -104,7 +104,7 @@ chown $(id -u):$(id -g) $HOME/.kube/config
 
 5 - Após esses passos você já está apto executar qualquer comando para validar que seu no master está ok!
 
-```bash:.bashrc
+```bash
 kubectl cluster-info
 kubectl get pods -A
 ```
@@ -113,14 +113,14 @@ kubectl get pods -A
 
 1 - Carregar os módulos do kernel overlay e br_netfilter é essencial para o funcionamento de um cluster Kubernetes. O módulo overlay permite que o sistema operacional suporte a sobreposição de sistemas de arquivos e o br_netfilter habilita o redirecionamento e o filtro de pacotes de rede que passam pela ponte (bridge) criada pelas redes do Kubernetes.
 
-```bash:.bashrc
+```bash
 echo overlay >> /etc/modules-load.d/k8s.conf
 echo br_netfilter >> /etc/modules-load.d/k8s.conf
 ```
 
 2 - Mude alguns parâmetros dentro do SO, para habilitar o IP Forwarding, bridge ipv4 e ipv6.
 
-```bash:.bashrc
+```bash
 echo net.bridge.bridge-nf-call-iptables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.bridge.bridge-nf-call-ip6tables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
@@ -128,7 +128,7 @@ echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
 
 3 - Faça um reboot utilizando o seguinte comando, para maquina carregar os módulos alterados.
 
-```bash:.bashrc
+```bash
 sysctl --system
 ```
 
@@ -136,19 +136,19 @@ sysctl --system
 
 1 - Realize o update dos pacotes da VM.
 
-```bash:.bashrc
+```bash
 apt update -y
 ```
 
 2 - Instale o binário do containerd.
 
-```bash:.bashrc
+```bash
 apt install -y containerd
 ```
 
 3 - Crie um diretório para setar as configurações do containerd.
 
-```bash:.bashrc
+```bash
 mkdir -p /etc/containerd
 containerd config default > /etc/containerd/config.toml
 systemctl restart containerd.service
@@ -156,9 +156,9 @@ systemctl restart containerd.service
 
 # Instalação dos pacotes kubernetes kubeadm, kubectl e kubelet (Worker)
 
-1 - 
+1 - Agora vamos instalar os seguintes componentes: kubeadm, utilitário responsável por inicializar o cluster; kubelet, componente que roda em todas as máquinas do cluster e realiza tarefas como iniciar pods e contêineres; e kubectl, ferramenta de linha de comando utilizada para interagir com o cluster.
 
-```bash:.bashrc
+```bash:
 apt-get install -y apt-transport-https ca-certificates curl gpg
 curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -173,7 +173,7 @@ systemctl enable --now kubelet
 
 2 - Garanta que o containerd está em funcionamento.
 
-```bash:.bashrc
+```bash
 systemctl status containerd.service
 ```
 
@@ -192,20 +192,21 @@ kubeadm join 10.128.0.2:6443 --token auizk7.zbsq77inba5eys2h \
 kubectl get nodes
 ```
 
-3 - Repare, que o node foi vinculado, mas tanto o node worker quanto o control-plane estão com o status "NotReady", isso significa que estamos sem nenhum cluster CNI de Network configurado. Neste tutorial vou utilizar o wave net um CNI suportado pelo Kubenetes.
+3 - Repare, que o node foi vinculado, mas tanto o node worker quanto o control-plane estão com o status "NotReady", isso significa que estamos sem nenhum cluster CNI de Network configurado. Neste tutorial vou utilizar o WaveNet um CNI suportado pelo Kubenetes.
 
 ```
 kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 ```
 
-4 - Agora execute um kubectl get nodes e você vai perceber que os nodes ficaram ready
+4 - Agora execute um kubectl get nodes, e você vai perceber que os nodes ficaram *ready*.
 
 [imagem-3]
 
+
 Obs.:
 
-Nesta versão você pode manusear o cluster com o crictl como se fosse o docker
+Nesta versão, é possível gerenciar o cluster utilizando o crictl, de forma semelhante ao uso do Docker.
+```
 crictl ps
+```
 
-Ajuste crictl
-export CONTAINER_RUNTIME_ENDPOINT=unix://run/containerd/containerd.sock
