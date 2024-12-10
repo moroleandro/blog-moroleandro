@@ -3,12 +3,8 @@ title: 'Criando cluster kubernetes utilizando containerd'
 date: '2024-12-10'
 tags: ['k8s']
 draft: false
-summary: ' '
+summary: 'Este guia apresenta o passo a passo para configurar um pequeno cluster Kubernetes voltado para cenários de testes, utilizando o runtime containerd.'
 ---
-
-# Introdução
-
-Neste exemplo vou demonostrar como subir um pequeno cluster kubernetes, para utilizar em cenários de testes, utilizando containerd.
 
 # Requisitos
 
@@ -17,17 +13,16 @@ Neste exemplo vou demonostrar como subir um pequeno cluster kubernetes, para uti
 
 [imagem]
 
-# Configuracoes iniciais (Control-plane)
+# Configurações iniciais (Controlplane)
 
-1 - Carregar dois modulos do Kernel (overlay e br_netfilter)
+1 - Carregar os módulos do kernel overlay e br_netfilter é essencial para o funcionamento de um cluster Kubernetes. O módulo overlay permite que o sistema operacional suporte a sobreposição de sistemas de arquivos e o br_netfilter habilita o redirecionamento e o filtro de pacotes de rede que passam pela ponte (bridge) criada pelas redes do Kubernetes.
 
 ```bash:.bashrc
 echo overlay >> /etc/modules-load.d/k8s.conf
 echo br_netfilter >> /etc/modules-load.d/k8s.conf
-
 ```
 
-2 - Mudar alguns parametros dentro do SO, para habilitar o ip Forwarding, bridge ipv4 e ipv6
+2 - Mude alguns parâmetros dentro do SO, para habilitar o IP Forwarding, bridge ipv4 e ipv6.
 
 ```bash:.bashrc
 echo net.bridge.bridge-nf-call-iptables = 1 >> /etc/sysctl.d/k8s.conf
@@ -35,27 +30,27 @@ echo net.bridge.bridge-nf-call-ip6tables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
 ```
 
-3 - Faca um reboot utilizando o seguinte comando, para maquina carregar os modulos alterados.
+3 - Faça um reboot utilizando o seguinte comando, para maquina carregar os módulos alterados.
 
 ```bash:.bashrc
 sysctl --system
 ```
 
-# Instalacão do runtime containerd (Control-plane)
+# Instalacão do runtime containerd (Controlplane)
 
-1 - Realize um update dos pacotes
+1 - Realize o update dos pacotes da VM.
 
 ```bash:.bashrc
 apt update -y
 ```
 
-2 - Instale o binario do containerd
+2 - Instale o binário do containerd.
 
 ```bash:.bashrc
 apt install -y containerd
 ```
 
-3 - Crie um diretorio para setar as configuracoes do containerd
+3 - Crie um diretório para setar as configurações do containerd.
 
 ```bash:.bashrc
 mkdir -p /etc/containerd
@@ -63,9 +58,9 @@ containerd config default > /etc/containerd/config.toml
 systemctl restart containerd.service
 ```
 
-# Instalacao dos pacotes kubernetes (kubeadm, kubectl e kubelet) - ControlPlane
+# Instalação dos pacotes kubernetes kubeadm, kubectl e kubelet (ControlPlane)
 
-https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+1 - 
 
 ```bash:.bashrc
 apt-get install -y apt-transport-https ca-certificates curl gpg
@@ -78,26 +73,28 @@ apt-mark hold kubelet kubeadm kubectl
 systemctl enable --now kubelet
 ```
 
-2 - Após feito a instalacão dos pacotes do kubernetes, chegou a hora de iniciar nosso cluster, para isso vamos utilizar o kubeadm para criar este cluster.
+[Para mais informações consulte a documentação do Kubernetes](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
+
+2 - Após feito a instalação dos pacotes do kubernetes, chegou a hora de iniciar nosso cluster, para isso vamos utilizar o kubeadm para criar este cluster.
 
 ```bash:.bashrc
 kubeadm init
 ```
 
-3 - Após essa instalacão seria apresentado um token parecido com este para realizar o vinculo de nodes workers dentro do nosso cluster. Mas antes precisamos ajustar nosso worker-node para vincular ele dentro do cluster.
+3 - Após a instalação, será apresentado um token semelhante ao exemplo abaixo, que será utilizado para vincular os nodes workers ao cluster. Porém, antes disso, é necessário ajustar o node worker para que ele possa ser integrado ao cluster.
 
 ```bash:.bashrc
 kubeadm join 10.128.0.2:6443 --token auizk7.zbsq77inba5eys2h \
         --discovery-token-ca-cert-hash sha256:6832f193effb7802dc020f34f64ec63c23ca2415ae1c355dae265af987154187
 ```
 
-Não se preocupe, caso você feche a sessão e perca este token basta executar o comando
+* Não se preocupe, caso você feche a sessão e perca este token basta executar o comando:
 
 ```bash:.bashrc
 kubeadm token create --print-join-command
 ```
 
-4 - Outro ponto necessário é liberar algumas permissões para a pasta do kubernetes
+4 - Outro ponto importante é ajustar as permissões para a pasta do Kubernetes.
 
 ```bash:.bashrc
 mkdir -p $HOME/.kube
@@ -105,25 +102,23 @@ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
-5 - Após esses passos você já está apto executar qualquer comando para validar que seu no master está ok
+5 - Após esses passos você já está apto executar qualquer comando para validar que seu no master está ok!
 
 ```bash:.bashrc
-
 kubectl cluster-info
 kubectl get pods -A
 ```
 
 # Configuracoes iniciais (Worker)
 
-1 - Carregar dois modulos do Kernel (overlay e br_netfilter)
+1 - Carregar os módulos do kernel overlay e br_netfilter é essencial para o funcionamento de um cluster Kubernetes. O módulo overlay permite que o sistema operacional suporte a sobreposição de sistemas de arquivos e o br_netfilter habilita o redirecionamento e o filtro de pacotes de rede que passam pela ponte (bridge) criada pelas redes do Kubernetes.
 
 ```bash:.bashrc
 echo overlay >> /etc/modules-load.d/k8s.conf
 echo br_netfilter >> /etc/modules-load.d/k8s.conf
-
 ```
 
-2 - Mudar alguns parametros dentro do SO, para habilitar o ip Forwarding, bridge ipv4 e ipv6
+2 - Mude alguns parâmetros dentro do SO, para habilitar o IP Forwarding, bridge ipv4 e ipv6.
 
 ```bash:.bashrc
 echo net.bridge.bridge-nf-call-iptables = 1 >> /etc/sysctl.d/k8s.conf
@@ -131,7 +126,7 @@ echo net.bridge.bridge-nf-call-ip6tables = 1 >> /etc/sysctl.d/k8s.conf
 echo net.ipv4.ip_forward = 1 >> /etc/sysctl.d/k8s.conf
 ```
 
-3 - Faca um reboot utilizando o seguinte comando, para maquina carregar os modulos alterados.
+3 - Faça um reboot utilizando o seguinte comando, para maquina carregar os módulos alterados.
 
 ```bash:.bashrc
 sysctl --system
@@ -139,19 +134,19 @@ sysctl --system
 
 # Instalacão do runtime containerd (Worker)
 
-1 - Realize um update dos pacotes
+1 - Realize o update dos pacotes da VM.
 
 ```bash:.bashrc
 apt update -y
 ```
 
-2 - Instale o binario do containerd
+2 - Instale o binário do containerd.
 
 ```bash:.bashrc
 apt install -y containerd
 ```
 
-3 - Crie um diretorio para setar as configuracoes do containerd
+3 - Crie um diretório para setar as configurações do containerd.
 
 ```bash:.bashrc
 mkdir -p /etc/containerd
@@ -159,9 +154,9 @@ containerd config default > /etc/containerd/config.toml
 systemctl restart containerd.service
 ```
 
-# Instalacao dos pacotes kubernetes (kubeadm, kubectl e kubelet) - Worker
+# Instalação dos pacotes kubernetes kubeadm, kubectl e kubelet (Worker)
 
-https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+1 - 
 
 ```bash:.bashrc
 apt-get install -y apt-transport-https ca-certificates curl gpg
@@ -174,18 +169,21 @@ apt-mark hold kubelet kubeadm kubectl
 systemctl enable --now kubelet
 ```
 
-2 - Garanta que o containerd está em funcionamento
+[Para mais informações consulte a documentação do Kubernetes](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)
 
+2 - Garanta que o containerd está em funcionamento.
+
+```bash:.bashrc
 systemctl status containerd.service
+```
 
-# Realizando join dos nodes workers dentro do cluster
+# Realizando join do node worker dentro do cluster (Worker)
 
 1 - Execute o comando gerado pelo control-plane dentro do node worker
 
 ```
 kubeadm join 10.128.0.2:6443 --token auizk7.zbsq77inba5eys2h \
         --discovery-token-ca-cert-hash sha256:6832f193effb7802dc020f34f64ec63c23ca2415ae1c355dae265af987154187
-
 ```
 
 2 - Feito este processo, você acabou de vincular o node worker dentro do cluster, mas o kubectl ainda não vai retornar nada dentro do node worker, para validar que o vinculo foi executado com sucesso, vá até seu control-plane e digite o seguinte comando para validar o vinculo.
@@ -198,7 +196,6 @@ kubectl get nodes
 
 ```
 kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-
 ```
 
 4 - Agora execute um kubectl get nodes e você vai perceber que os nodes ficaram ready
