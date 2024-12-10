@@ -30,7 +30,7 @@
     "postcss": "^8.2.1",
     "preact": "^10.5.7",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
     "reading-time": "1.2.1",
     "rehype-katex": "^4.0.0",
     "remark-autolink-headings": "6.0.1",
